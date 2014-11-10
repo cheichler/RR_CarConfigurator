@@ -1,0 +1,2 @@
+original OBJ file: showroom.obj
+part1.json > alias: Mesh_Teapot01_Material

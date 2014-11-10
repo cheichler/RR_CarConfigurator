@@ -14,6 +14,19 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 
+#Project specific
+*.json
+*.tlog
+*.exe
+*.obj
+
+
+**/boost/
+inc/glm/
+RR_CarConfigurator/x64/
+
+
+
 # =========================
 # Operating System Files
 # =========================
