@@ -536,6 +536,18 @@ void drawScene(void)
 	glutPostRedisplay();
 	glFinish();
 
+	/************************************************************************/
+	/* RR Stuff: Added                                                      */
+	/************************************************************************/
+	glReadBuffer(GL_BACK);
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, pbo);
+	glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+	RREncode();
+	glutSwapBuffers();
+	glutPostRedisplay();
+	glFinish();
+
 	lastTimeMS = st.wMilliseconds;
 }
 
@@ -545,10 +557,52 @@ void initCallbacks()
 	glutSpecialFunc(processKeyOps);
 }
 
+void keyInputHandler(int key, bool pressed)
+{
+
+}
+
+void mouseInputHandler(int dx, int dy, int button, int state)
+{
+
+}
+
 int main(int argc, char** argv)
 {
+	/************************************************************************/
+	/* RR Stuff                                                             */
+	/************************************************************************/
+
+	ConfigFile cf("CarConfig.ini");
+	std::string serverIP = cf.Value("server", "ip");
+	int port = cf.Value("server", "port");
+	width = cf.Value("resolution", "width");
+	height = cf.Value("resolution", "height");
+
 	initOpenGL(argc, argv);
-	
+
+	RREncoderDesc desc;
+	desc.gfxapi = GL;
+	desc.h = height;
+	desc.w = width;
+	desc.ip = serverIP.c_str();
+	desc.port = port;
+	desc.keyHandler = keyInputHandler;
+	desc.mouseHandler = mouseInputHandler;
+
+	glGenBuffers(1, &pbo);
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, pbo);
+	glBufferData(GL_PIXEL_PACK_BUFFER, width * height * 4, NULL, GL_STATIC_DRAW);
+
+	RRInit(desc);
+	RRWaitForConnection();
+	RRSetSource(&pbo);
+
+	/************************************************************************/
+	/*                                                                      */
+	/************************************************************************/
+
+
 	//Initialisiere neuen RemoteEncoder
 	glClearColor(0.0, 0.0, 1.0, 1.0);
 	glClearDepth(1.0);

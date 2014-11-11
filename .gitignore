@@ -20,6 +20,7 @@ $RECYCLE.BIN/
 *.exe
 *.obj
 *.sdf
+*.opensdf
 
 
 **/boost/

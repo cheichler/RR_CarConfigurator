@@ -27,11 +27,11 @@
 #include <boost\property_tree\json_parser.hpp>
 #include <boost\property_tree\json_parser.hpp>
 
-
+#include <RemoteEncoderAPI.h>
 
 #include "Modell.h"
 #include "Util.h"
-
+#include "ConfigFile.h"
 
 
 using namespace std;
@@ -46,6 +46,7 @@ GLuint framebuffer;
 GLuint programID = 0;
 GLuint ATTR_POS;
 GLuint ATTR_NORMAL;
+GLuint pbo = 0;
 
 //Kommunikation zwischen OpenGL und CUDA
 
