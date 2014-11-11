@@ -559,12 +559,13 @@ void initCallbacks()
 
 void keyInputHandler(int key, bool pressed)
 {
-
+	processKeyOps(key, 0, 0);
+	std::cout << "Key Dummy"  << std::endl;
 }
 
 void mouseInputHandler(int dx, int dy, int button, int state)
 {
-
+	std::cout << "Mouse Dummy"  << std::endl;
 }
 
 int main(int argc, char** argv)
@@ -629,6 +630,7 @@ int main(int argc, char** argv)
 
 	while(true)
 	{
+		RRQueryClientEvents();
 		glutMainLoopEvent();
 	}
 	return 0;
