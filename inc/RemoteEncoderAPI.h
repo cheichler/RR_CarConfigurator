@@ -34,6 +34,20 @@ typedef void (*KeyBoardHandler)(int key, bool pressed);
 */
 typedef void (*MouseHandler)(int dx, int dy, int button, int state);
 
+/**
+ * \brief API Callback to handle MouseMovement
+ *			Currently ONLY Left Mousebutton is supported
+ * \param[in] dx Mousemovement during last frame in X-Dir
+ * \param[in] dy Mousemovement during last frame in Y-Dir
+ * \param[in] button Pressed Mousebutton currently <b> only </b>
+ *			Left Mousebutton is supported and set by default   
+ * \param[in] state States if Mousebutton was pressed (state = 1)
+ *          or released
+ * \remarks MouseMovement is only broadcasted and processed if 
+ *			MouseKey is pressed                                                               
+*/
+typedef void (*SpecialKeyHandler)(int key, bool pressed);
+
 enum GFX_API
 {
 	D3D,
@@ -53,6 +67,8 @@ enum GFX_API
 */
 struct RREncoderDesc
 {
+	RREncoderDesc() : gfxapi(GL), w(800), h(600), ip("127.0.0.1"),
+	port (8080), keyHandler(NULL), mouseHandler(NULL), specialKeyHandler(NULL){}
 	GFX_API gfxapi;
 	unsigned int w;
 	unsigned int h;
@@ -60,6 +76,7 @@ struct RREncoderDesc
 	int port;
 	KeyBoardHandler keyHandler;
 	MouseHandler mouseHandler;
+	SpecialKeyHandler specialKeyHandler;
 };
 
 /**

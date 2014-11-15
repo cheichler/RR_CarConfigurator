@@ -27,12 +27,16 @@
 #include <boost\property_tree\json_parser.hpp>
 #include <boost\property_tree\json_parser.hpp>
 
+
 #include <RemoteEncoderAPI.h>
 
 #include "Modell.h"
 #include "Util.h"
 #include "ConfigFile.h"
 
+#define MOUSEROTATIONFAKTOR 100
+#define KEYROTATIONFAKTOR 15
+#define ZOOMFAKTOR 0.3
 
 using namespace std;
 using boost::property_tree::ptree;
@@ -73,7 +77,6 @@ int partID;
 //User Input
 bool keyStates[256];
 bool keySpecialStates[246];
-bool lastState;
 
 int recentMouse_X;
 int recentMouse_Y;

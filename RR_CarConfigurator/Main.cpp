@@ -434,45 +434,45 @@ void createShaderProgram()
 	cout << "ShaderProgramm ist generiert!" << endl;
 }
 
-void processKeyOps(int key, int x, int y)
+void processKeyOps()
 {
-	if (key == GLUT_KEY_F1)
+	if (keySpecialStates[GLUT_KEY_F1])
 	{
 		vw = false;
 		initCars(1, 182);
 	}
-	if (key == GLUT_KEY_F2)
+	if (keySpecialStates[GLUT_KEY_F2])
 	{
 		vw = false;
 		initCars(2, 163);
 	}
-	if (key == GLUT_KEY_F3)
+	if (keySpecialStates[GLUT_KEY_F3])
 	{
 		vw = true;
 		initCars(3, 331);
 	}
-	if (key == GLUT_KEY_F4)
+	if (keySpecialStates[GLUT_KEY_F4])
 	{
 		vw = false;
 		initCars(4, 1);
 	}
 
 
-	if (key == GLUT_KEY_UP)
+	if (keySpecialStates[GLUT_KEY_UP] || keyStates['w'] || keyStates['W'])
 	{
-		zoom += 0.3f;
+		zoom += ZOOMFAKTOR;
 	}
-	if (key == GLUT_KEY_DOWN)
+	if (keySpecialStates[GLUT_KEY_DOWN] || keyStates['s'] || keyStates['S'])
 	{
-		zoom -= 0.3f;
+		zoom -= ZOOMFAKTOR;
 	}
-	if (key == GLUT_KEY_LEFT)
+	if (keySpecialStates[GLUT_KEY_LEFT] || keyStates['a'] || keyStates['A'])
 	{
-		rotationAngle_Y += 15.0f;
+		rotationAngle_Y += KEYROTATIONFAKTOR;
 	}
-	if (key == GLUT_KEY_RIGHT)
+	if (keySpecialStates[GLUT_KEY_RIGHT] || keyStates['d'] || keyStates['D'])
 	{
-		rotationAngle_Y -= 15.0f;
+		rotationAngle_Y -= KEYROTATIONFAKTOR;
 	}
 	if (keySpecialStates[GLUT_KEY_END])
 	{
@@ -554,17 +554,39 @@ void drawScene(void)
 void initCallbacks()
 {
 	glutDisplayFunc(drawScene);
-	glutSpecialFunc(processKeyOps);
 }
 
 void keyInputHandler(int key, bool pressed)
 {
-	processKeyOps(key, 0, 0);
+	if(pressed)
+		keyStates[key] = true;
+	else
+		keyStates[key] = false;
 	std::cout << "Key Dummy"  << std::endl;
+}
+
+void specialInputHandler(int key, bool pressed)
+{
+	if(pressed)
+		keySpecialStates[key] = true;
+	else
+		keySpecialStates[key] = false;
+	std::cout << "Special Key Dummy"  << std::endl;
 }
 
 void mouseInputHandler(int dx, int dy, int button, int state)
 {
+	if(dy > 0)
+		rotationAngle_X += MOUSEROTATIONFAKTOR;
+	else if(dy < 0)
+		rotationAngle_X -= MOUSEROTATIONFAKTOR;
+
+	if (dx > 0)
+		rotationAngle_Y += MOUSEROTATIONFAKTOR;
+	else if(dx < 0)
+		rotationAngle_Y -= MOUSEROTATIONFAKTOR;
+
+
 	std::cout << "Mouse Dummy"  << std::endl;
 }
 
@@ -590,6 +612,7 @@ int main(int argc, char** argv)
 	desc.port = port;
 	desc.keyHandler = keyInputHandler;
 	desc.mouseHandler = mouseInputHandler;
+	desc.specialKeyHandler = specialInputHandler;
 
 	glGenBuffers(1, &pbo);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, pbo);
@@ -631,6 +654,7 @@ int main(int argc, char** argv)
 	while(true)
 	{
 		RRQueryClientEvents();
+		processKeyOps();
 		glutMainLoopEvent();
 	}
 	return 0;
