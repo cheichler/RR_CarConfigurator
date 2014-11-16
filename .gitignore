@@ -23,7 +23,7 @@ $RECYCLE.BIN/
 *.opensdf
 
 
-**/boost/
+inc/boost/
 inc/glm/
 RR_CarConfigurator/x64/
 

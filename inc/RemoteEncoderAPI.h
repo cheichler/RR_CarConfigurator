@@ -35,16 +35,12 @@ typedef void (*KeyBoardHandler)(int key, bool pressed);
 typedef void (*MouseHandler)(int dx, int dy, int button, int state);
 
 /**
- * \brief API Callback to handle MouseMovement
- *			Currently ONLY Left Mousebutton is supported
- * \param[in] dx Mousemovement during last frame in X-Dir
- * \param[in] dy Mousemovement during last frame in Y-Dir
- * \param[in] button Pressed Mousebutton currently <b> only </b>
- *			Left Mousebutton is supported and set by default   
- * \param[in] state States if Mousebutton was pressed (state = 1)
- *          or released
- * \remarks MouseMovement is only broadcasted and processed if 
- *			MouseKey is pressed                                                               
+ * \brief API Callback to handle received UserInput    
+ * \param[in] key Indentifies which special Key (referring to GLUT_SPECIAL_KEY)
+ *			was pressed, eg. 'w' = 119
+ * \param[in] pressed Whether key was pressed or Released
+ * 
+ * \remarks Callback is only called once on KeyHit and KeyRelease
 */
 typedef void (*SpecialKeyHandler)(int key, bool pressed);
 
@@ -124,6 +120,19 @@ CM_DLL_API void CM_API RRWaitForConnection();
 CM_DLL_API void CM_API RRQueryClientEvents();
 
 /**
- *                                                                      
+ *	\brief Returns whether the given key is pressed or not
+ *			(refers to ASCII-Keys of 8Bit char)
 */
 CM_DLL_API bool CM_API RRIsKeyDown(char key);
+
+/**
+ *	\brief Returns whether the given key is pressed or not
+ *			(refers to GLUT_SPECIAL_KEY)
+*/
+CM_DLL_API bool CM_API RRIsSpecialKeyDown(int specialKey);
+
+/** 
+ *  \brief Broadcasts the given Msg to the Client
+ *  \param msg the message to be broadcasted
+*/
+CM_DLL_API void CM_API RRBroadcastMsgToClient(const std::string msg);

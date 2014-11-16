@@ -61,7 +61,7 @@ vector<double> calculateNormals(vector<double>& vertices, vector<int>& indices)
 }
 
 
-bool initOpenGL(int argc, char** argv)
+void initOpenGL(int argc, char** argv)
 {
 	glutInit(&argc, argv);
 	glutInitWindowSize(width,height);
@@ -370,14 +370,27 @@ void initCars(int carID, int anzahl)
 		break;
 	}
 	cout << "Lade " << name << " mit " << anzahl << " Teile..." << endl;
+	std::stringstream bmsg; 
+
+	bmsg << "Lade " << name << " mit " << anzahl << (anzahl == 1 ? " Teil... " : " Teile... ") 
+		<< endl;
+
+	RRBroadcastMsgToClient(bmsg.str());
+	bmsg.str("");
+	bmsg.clear();
 
 	for (int i = 1; i < anzahl + 1; i++)
 	{
 		std::stringstream s;
-
+	
 		s << "models\\" << name << "\\part" << i << ".json";
 
-		cout << "Part " << i << " wird geladen!" << endl;
+		bmsg << "Part " << i << " wird geladen!" << endl;
+		RRBroadcastMsgToClient(bmsg.str());
+		bmsg.str("");
+		bmsg.clear();
+
+		cout << "Part " << i << " wird geladen!" << " Length of ss: " << bmsg.str().length() << endl;
 		partID = i;
 
 		loadParts(s.str());
@@ -450,11 +463,6 @@ void processKeyOps()
 	{
 		rotationAngle_Y -= KEYROTATIONFAKTOR;
 	}
-	if (keySpecialStates[GLUT_KEY_END])
-	{
-		deleteCar();
-	}
-
 }
 
 
@@ -569,10 +577,17 @@ void specialInputHandler(int key, bool pressed)
 			vw = false;
 			boost::thread(initCars, 4, 1);
 		}
+		/************************************************************************/
+		/* TODO: FIX                                                            */
+		/************************************************************************/
 		if (key == GLUT_KEY_F5)
 		{
 			vw = false;
 			boost::thread(initScene);
+		}
+		if (key == GLUT_KEY_END)
+		{
+			deleteCar();
 		}
 	}
 }
