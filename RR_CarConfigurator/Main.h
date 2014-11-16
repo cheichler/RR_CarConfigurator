@@ -3,6 +3,7 @@
 #define _USE_MATH_DEFINES // for C++
 #include <cmath>
 #include <Windows.h>
+#include <queue>
 #include <iostream>
 #include <stdlib.h>
 #include <gl\glew.h>
@@ -26,7 +27,9 @@
 #include <boost\property_tree\ptree_fwd.hpp>
 #include <boost\property_tree\json_parser.hpp>
 #include <boost\property_tree\json_parser.hpp>
-
+#include <boost\thread.hpp>
+#include <boost\lockfree\queue.hpp>
+#include <boost\thread\mutex.hpp>
 
 #include <RemoteEncoderAPI.h>
 
@@ -58,6 +61,14 @@ vector<int> vbo;
 vector<int> ibo;
 vector<int> nbo;
 vector<Modell*> part;
+
+/************************************************************************/
+/* Threading                                                            */
+/************************************************************************/
+std::queue <Modell*> toDo;
+boost::mutex m_lock;
+
+
 
 int width = 800;
 int height = 600;

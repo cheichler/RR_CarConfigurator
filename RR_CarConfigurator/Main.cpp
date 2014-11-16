@@ -210,6 +210,7 @@ void deleteCar()
 void initBuffers(Modell* m)
 {
 	float* vertexBuffer = (float*) malloc(sizeof(float) * m->getVertices().size());
+
 	int i = 0;
 
 	for (vector<double>::iterator it = m->getVertices().begin(); it != m->getVertices().end(); it++)
@@ -258,9 +259,6 @@ void initBuffers(Modell* m)
 	nbo.push_back(nboId);
 	ibo.push_back(iboId);
 	part.push_back(m);
-
-
-
 }
 
 void updateTransformation()
@@ -333,9 +331,9 @@ void loadParts(const string &fileName)
 
 	Modell* m = new Modell(alias, vertices, normals, indices, Ni, Ka, d, Kd, Ks,
 		Ns);
-
-	initBuffers(m);
-
+	m_lock.lock();
+	toDo.push(m);
+	m_lock.unlock();
 }
 
 void initScene()
@@ -436,28 +434,6 @@ void createShaderProgram()
 
 void processKeyOps()
 {
-	if (keySpecialStates[GLUT_KEY_F1])
-	{
-		vw = false;
-		initCars(1, 182);
-	}
-	if (keySpecialStates[GLUT_KEY_F2])
-	{
-		vw = false;
-		initCars(2, 163);
-	}
-	if (keySpecialStates[GLUT_KEY_F3])
-	{
-		vw = true;
-		initCars(3, 331);
-	}
-	if (keySpecialStates[GLUT_KEY_F4])
-	{
-		vw = false;
-		initCars(4, 1);
-	}
-
-
 	if (keySpecialStates[GLUT_KEY_UP] || keyStates['w'] || keyStates['W'])
 	{
 		zoom += ZOOMFAKTOR;
@@ -562,7 +538,6 @@ void keyInputHandler(int key, bool pressed)
 		keyStates[key] = true;
 	else
 		keyStates[key] = false;
-	std::cout << "Key Dummy"  << std::endl;
 }
 
 void specialInputHandler(int key, bool pressed)
@@ -571,7 +546,35 @@ void specialInputHandler(int key, bool pressed)
 		keySpecialStates[key] = true;
 	else
 		keySpecialStates[key] = false;
-	std::cout << "Special Key Dummy"  << std::endl;
+
+	if(pressed)
+	{
+		if (key == GLUT_KEY_F1)
+		{
+			vw = false;
+			boost::thread(initCars, 1, 182);
+		}
+		if (key == GLUT_KEY_F2)
+		{
+			vw = false;
+			boost::thread(initCars, 2, 163);
+		}
+		if (key == GLUT_KEY_F3)
+		{
+			vw = true;
+			boost::thread(initCars, 3, 331);
+		}
+		if (key == GLUT_KEY_F4)
+		{
+			vw = false;
+			boost::thread(initCars, 4, 1);
+		}
+		if (key == GLUT_KEY_F5)
+		{
+			vw = false;
+			boost::thread(initScene);
+		}
+	}
 }
 
 void mouseInputHandler(int dx, int dy, int button, int state)
@@ -585,9 +588,6 @@ void mouseInputHandler(int dx, int dy, int button, int state)
 		rotationAngle_Y += MOUSEROTATIONFAKTOR;
 	else if(dx < 0)
 		rotationAngle_Y -= MOUSEROTATIONFAKTOR;
-
-
-	std::cout << "Mouse Dummy"  << std::endl;
 }
 
 int main(int argc, char** argv)
@@ -642,9 +642,8 @@ int main(int argc, char** argv)
 	initProjection();
 
 	initLights();
-
 	initScene();
-
+	
 
 	glEnableVertexAttribArray(ATTR_POS);
 	glEnableVertexAttribArray(ATTR_NORMAL);
@@ -653,6 +652,14 @@ int main(int argc, char** argv)
 
 	while(true)
 	{
+		if(!toDo.empty())
+		{
+			m_lock.lock();
+			initBuffers(toDo.front());
+			toDo.pop();
+			m_lock.unlock();
+		}
+
 		RRQueryClientEvents();
 		processKeyOps();
 		glutMainLoopEvent();
